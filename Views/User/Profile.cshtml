@@ -1,0 +1,32 @@
+﻿@using Application.Models;
+@model IEnumerable<File>
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container">
+    <h2 class="text-lg-center">My Files</h2>
+    <div class="py-2">
+        <table id="files">
+            @foreach (var file in Model)
+            {
+                <tr>
+                    <td>@file.Name</td>
+                    <td width="100px"></td>  
+                    <td><a asp-controller="Files" asp-action="Upload" asp-route-id="@file.Id">Download</a></td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+@*<script>
+    document.querySelector("#files").addEventListener('click', function (e) {
+        if (e.target.localName == 'button' && e.target.dataset.fileId) {
+            fetch(`${location.origin}/files/upload/${e.target.dataset.fileId}`, {
+                method: "POST"
+            })
+                .catch(e => console.log(e));
+        }
+    });
+</script>*@

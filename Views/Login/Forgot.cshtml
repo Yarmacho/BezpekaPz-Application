@@ -1,0 +1,47 @@
+﻿@using Application.Services
+@model IRequestResult 
+@{
+    ViewData["Title"] = "Forgot";
+}
+
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+        <!-- Tabs Titles -->
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <p>Forgot password</p>
+        </div>
+
+        <!-- Login Form -->            
+        @{
+            object login = null;
+            var hasLogin = Model != null && Model.Parameters.TryGetValue("Login", out login);
+        }
+    <form method="post" class="needs-validation" asp-action="@(hasLogin ? "Restore" : "Exists")" novalidate>
+        <input type="text" class="form-control fadeIn second" name="login" placeholder="Login" required value="@(hasLogin ? login : string.Empty)" @(hasLogin ? "disabled" : string.Empty)>
+        <p class="invalid-feedback">
+            @(Model != null && Model.Parameters.TryGetValue("LoginError", out object loginError) ? loginError : "This field is required")
+        </p>
+        @if (hasLogin)
+        {
+            <input type="hidden" value="@login" name="login"/>
+            <input type="password" class="fadeIn third form-control" name="password" placeholder="New Password" required>
+            <p class="invalid-feedback">
+                @(Model != null && Model.Parameters.TryGetValue("PasswordError", out object passwordError) ? passwordError : "This field is required")
+            </p>
+        }
+        <input type="submit" class="fadeIn fourth" value="Restore">
+    </form>
+
+        <!-- Remind Passowrd -->
+        <div id="formFooter">
+            <p>
+                Already registered? - <a class="underlineHover" asp-controller="Login" asp-action="Login">Log in</a>
+            </p>
+            <p>
+                No account? - <a class="underlineHover" asp-controller="Login" asp-action="Register">Register</a>
+            </p>
+        </div>
+
+    </div>
+</div>

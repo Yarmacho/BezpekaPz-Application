@@ -1,0 +1,38 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using Application.Services
+@model IRequestResult
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+        <!-- Tabs Titles -->
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <p>Login</p>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" class="needs-validation" novalidate>
+            <input type="text" id="login" class="fadeIn second form-control" name="login" placeholder="Login" required>
+            <p class="invalid-feedback">
+                @(Model != null && Model.Parameters.TryGetValue("LoginError", out object loginError) ? loginError : "This field is required")
+            </p>
+            <input type="password" id="password" class="fadeIn third form-control" name="password" placeholder="Password" required>
+            <p class="invalid-feedback">
+                @(Model != null && Model.Parameters.TryGetValue("PasswordError", out object passwordError) ? passwordError : "This field is required")
+            </p>
+            <input type="submit" class="fadeIn fourth" value="Log In">
+        </form>
+
+        <!-- Remind Passowrd -->
+        <div id="formFooter">
+            <p>
+                No account? - <a class="underlineHover" asp-controller="Login" asp-action="Register">Register</a>
+            </p>
+            <p>
+                <a class="underlineHover" asp-controller="Login" asp-action="Forgot">Forgot Password?</a>
+            </p>
+        </div>
+
+    </div>
+</div>
