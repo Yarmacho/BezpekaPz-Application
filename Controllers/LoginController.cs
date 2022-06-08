@@ -2,6 +2,7 @@
 using Application.Services;
 using Application.Services.Login;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Drawing.Imaging;
 using System.IO;
@@ -12,9 +13,11 @@ namespace Application.Controllers
     public class LoginController : Controller
     {
         private readonly ILoginService _loginService;
-        public LoginController(ILoginService loginService)
+        private readonly string _userCookie;
+        public LoginController(ILoginService loginService, IConfiguration configuration)
         {
             _loginService = loginService;
+            _userCookie = configuration.GetSection("Auth")["CookieName"];
         }
 
         [Route("login")]
@@ -51,6 +54,7 @@ namespace Application.Controllers
                 TempData["result"] = JsonConvert.SerializeObject(result);
                 return RedirectToAction("Login");
             }
+            Response.Cookies.Append(_userCookie, result.Login);
             return RedirectToAction("Index", "Home");
         }
 

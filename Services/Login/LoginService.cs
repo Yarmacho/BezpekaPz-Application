@@ -51,9 +51,8 @@ namespace Application.Services.Login
                 return new LoginResult("Something went wrong!");
             }
             login = _encryptionService.Encrypt(login, _encryptionKey);
-            _httpContextAccessor.HttpContext.Response.Cookies.Append(_userCookie, login);
 
-            return new LoginResult() { Login = _encryptionService.Encrypt(login, _encryptionKey) };
+            return new LoginResult() { Login = login };
         }
 
         public RegisterResult Register(string name, string login, string password)
