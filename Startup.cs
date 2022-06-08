@@ -3,11 +3,11 @@ using Application.Services.Login;
 using Application.Services.Encryption;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Application.Services;
 
 namespace Application
 {
@@ -33,6 +33,7 @@ namespace Application
             services.AddTransient<ILoginService, LoginService>();
             services.AddDbContext<ApplicationContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<RandomStringGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

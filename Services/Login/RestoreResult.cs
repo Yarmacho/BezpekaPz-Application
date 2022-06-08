@@ -1,7 +1,10 @@
 ﻿namespace Application.Services.Login
 {
-    public class RestoreResult : RequestResult
+    public class RestoreResult : RequestResult, ICaptchaResult
     {
+        public string CaptchaErrorMessage => "Invalid captcha!";
+
+        public bool CaptchaSuccess { get; set; }
         public RestoreResult()
         {
         }

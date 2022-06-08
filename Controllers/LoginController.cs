@@ -1,8 +1,10 @@
-﻿using Application.Services;
+﻿using Application.Entities;
+using Application.Services;
 using Application.Services.Login;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace Application.Controllers
 {
@@ -16,42 +18,61 @@ namespace Application.Controllers
         }
 
         [Route("login")]
-        public IActionResult Login()
+        public IActionResult Login([FromServices] RandomStringGenerator generator)
         {
+            ViewData["captchaString"] = generator.Generate(8);
             return View(TempData.TryGetValue("result", out object result) 
                 ? JsonConvert.DeserializeObject<LoginResult>(result?.ToString()) : null);
         }
 
         [Route("register")]
-        public IActionResult Register()
+        public IActionResult Register([FromServices] RandomStringGenerator generator)
         {
+            ViewData["captchaString"] = generator.Generate(8);
             return View(TempData.TryGetValue("result", out object result) 
                 ? JsonConvert.DeserializeObject<RegisterResult>(result?.ToString()) : null);
         }
 
         [Route("forgot")]
-        public IActionResult Forgot()
+        public IActionResult Forgot([FromServices] RandomStringGenerator generator)
         {
+            ViewData["captchaString"] = generator.Generate(8);
             return View(TempData.TryGetValue("result", out object result) 
                 ? JsonConvert.DeserializeObject<RequestResult>(result?.ToString()) : null);
         }
 
         [HttpPost("login")]
-        public IActionResult Login(string login, string password)
+        public IActionResult Login(string login, string password, string captchaString, string userCaptcha)
         {
             var result = _loginService.Login(login, password);
-            if (!result.Success)
+            result.CaptchaSuccess = captchaString == userCaptcha;
+            if (!result.Success || !result.CaptchaSuccess)
             {
-                return new JsonResult(result);
+                TempData["result"] = JsonConvert.SerializeObject(result);
+                return RedirectToAction("Login");
             }
             return RedirectToAction("Index", "Home");
         }
 
+        [Route("captcha")]
+        public IActionResult Captcha(string captchaString)
+        {
+            CaptchaImage captcha = new CaptchaImage(captchaString, 250, 50);
+
+            using var stream = new MemoryStream();
+            captcha.Image.Save(stream, ImageFormat.Jpeg);
+           
+            captcha.Dispose();
+            return File(stream.ToArray(), "image/jpeg");
+        }
+
         [HttpPost("register")]
-        public IActionResult Register(string name, string login, string password)
+        public IActionResult Register(string name, string login, string password,
+            string captchaString, string userCaptcha)
         {
             var result = _loginService.Register(name, login, password);
-            if (!result.Success)
+            result.CaptchaSuccess = captchaString == userCaptcha;
+            if (!result.Success || !result.CaptchaSuccess)
             {
                 TempData["result"] = JsonConvert.SerializeObject(result);
                 return RedirectToAction("Register");
@@ -72,10 +93,12 @@ namespace Application.Controllers
         }
 
         [HttpPost("restore")]
-        public IActionResult Restore([FromForm]string login, [FromForm] string password)
+        public IActionResult Restore([FromForm]string login, [FromForm] string password,
+            string captchaString, string userCaptcha)
         {
             var result = _loginService.Restore(login, password);
-            if (!result.Success)
+            result.CaptchaSuccess = captchaString == userCaptcha;
+            if (!result.Success || !result.CaptchaSuccess)
             {
                 TempData["result"] = JsonConvert.SerializeObject(result);
                 return RedirectToAction("Forgot");

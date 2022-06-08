@@ -1,8 +1,9 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@using Application.Services
-@model IRequestResult
+@using Application.Services.Login
+@model LoginResult
+
 <div class="wrapper fadeInDown">
     <div id="formContent">
         <!-- Tabs Titles -->
@@ -17,10 +18,22 @@
             <p class="invalid-feedback">
                 @(Model != null && Model.Parameters.TryGetValue("LoginError", out object loginError) ? loginError : "This field is required")
             </p>
-            <input type="password" id="password" class="fadeIn third form-control" name="password" placeholder="Password" required>
+            <input type="password" id="password" class="fadeIn second form-control" name="password" placeholder="Password" required>
             <p class="invalid-feedback">
                 @(Model != null && Model.Parameters.TryGetValue("PasswordError", out object passwordError) ? passwordError : "This field is required")
             </p>
+
+            <div class="d-flex justify-content-center my-2">
+                <img src='@Url.Action("Captcha", "Login", new { captchaString = ViewData["captchaString"] }, null)' alt='captcha' />
+            </div>
+            <input name="captchaString" type="hidden" value="@ViewData["captchaString"]">
+            <input type="text" id="captcha-input" class="fadeIn third form-control" name="userCaptcha" placeholder="Enter text from image" required>
+            @if (Model != null && !Model.CaptchaSuccess)
+            {
+            <p style="color: red;">
+                @Model.CaptchaErrorMessage
+            </p>
+            }
             <input type="submit" class="fadeIn fourth" value="Log In">
         </form>
 
@@ -33,6 +46,5 @@
                 <a class="underlineHover" asp-controller="Login" asp-action="Forgot">Forgot Password?</a>
             </p>
         </div>
-
     </div>
 </div>

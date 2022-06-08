@@ -24,11 +24,16 @@
         </p>
         @if (hasLogin)
         {
-            <input type="hidden" value="@login" name="login"/>
+            <input type="hidden" value="@login" name="login" />
             <input type="password" class="fadeIn third form-control" name="password" placeholder="New Password" required>
             <p class="invalid-feedback">
                 @(Model != null && Model.Parameters.TryGetValue("PasswordError", out object passwordError) ? passwordError : "This field is required")
             </p>
+            <div class="d-flex justify-content-center my-2">
+                <img src='@Url.Action("Captcha", "Login", new { captchaString = ViewData["captchaString"] }, null)' alt='captcha' />
+            </div>
+            <input name="captchaString" type="hidden" value="@ViewData["captchaString"]">
+            <input type="text" id="captcha-input" class="fadeIn third form-control" name="userCaptcha" placeholder="Enter text from image" required>
         }
         <input type="submit" class="fadeIn fourth" value="Restore">
     </form>
