@@ -29,7 +29,7 @@ namespace Application.Services.Encryption
         private static string vigenere(string text, string password, bool encrypting = true)
         {
             var gamma = getRepeatKey(password, text.Length);
-            var retValue = "";
+            var retValue = new StringBuilder();
             var q = _alphabet.Length;
 
             for (int i = 0; i < text.Length; i++)
@@ -38,15 +38,15 @@ namespace Application.Services.Encryption
                 var codeIndex = _alphabet.IndexOf(char.ToLowerInvariant(gamma[i]));
                 if (letterIndex < 0)
                 {
-                    retValue += text[i].ToString();
+                    retValue.Append(text[i]);
                 }
                 else
                 {
-                    retValue += _alphabet[(q + letterIndex + ((encrypting ? 1 : -1) * codeIndex)) % q].ToString();
+                    retValue.Append(_alphabet[(q + letterIndex + ((encrypting ? 1 : -1) * codeIndex)) % q]);
                 }
             }
 
-            return retValue;
+            return retValue.ToString();
         }
     }
 }
