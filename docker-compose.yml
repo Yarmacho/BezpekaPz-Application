@@ -1,0 +1,25 @@
+version: "3.3"
+volumes:
+  data:
+
+services:
+  application:    
+    container_name: application
+    build:      
+      context: ..
+      dockerfile: ./Application/Dockerfile
+    depends_on: [ mssql ]        
+    ports:
+      - "8080:80"
+  mssql:
+    image: "mcr.microsoft.com/mssql/server"
+    container_name: mssql
+    hostname: mssql
+    environment:
+      SA_PASSWORD: "VeryStrongPassword"
+      ACCEPT_EULA: "Y"
+    restart: always    
+    ports:
+      - "11433:1433"
+    volumes:
+      - data:/var/mssql/data
